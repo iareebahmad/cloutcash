@@ -35,8 +35,8 @@ export const Features = () => {
   ];
 
   return (
-    <section className="py-20 bg-muted/30">
-      <div className="container mx-auto px-4">
+    <section className="py-20 bg-muted/30 relative overflow-hidden">
+      <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
             The Smartest Way to
@@ -58,8 +58,8 @@ export const Features = () => {
 };
 
 const FeatureCard = ({ icon: Icon, title, description }: { icon: any; title: string; description: string }) => (
-  <div className="bg-card border border-border rounded-2xl p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-    <div className="bg-primary/10 w-14 h-14 rounded-xl flex items-center justify-center mb-6">
+  <div className="bg-card border border-border rounded-2xl p-8 hover-lift group">
+    <div className="bg-primary/10 w-14 h-14 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
       <Icon className="h-7 w-7 text-primary" />
     </div>
     <h3 className="text-xl font-semibold mb-3 text-foreground">{title}</h3>

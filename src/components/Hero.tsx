@@ -1,11 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, TrendingUp } from "lucide-react";
+import { useState } from "react";
 import logo from "@/assets/cloutcash-logo.png";
+import { SignupModal } from "./SignupModal";
+import { ThemeToggle } from "./ThemeToggle";
 
 export const Hero = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"creator" | "brand">("creator");
+
+  const openModal = (type: "creator" | "brand") => {
+    setModalType(type);
+    setIsModalOpen(true);
+  };
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted">
-      <div className="container mx-auto px-4 py-20 md:py-32">
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-20">
+        <ThemeToggle />
+      </div>
+
+      <div className="container mx-auto px-4 py-20 md:py-32 animate-fade-in">
         <div className="flex flex-col items-center text-center">
           <img src={logo} alt="CloutCash Logo" className="h-20 md:h-24 mb-8 animate-fade-in" />
           
@@ -21,12 +37,22 @@ export const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-16">
-            <Button variant="hero" size="lg" className="text-lg px-10 py-6 h-auto">
-              I'm an Influencer
-              <Users className="ml-2 h-5 w-5" />
+            <Button 
+              variant="hero" 
+              size="lg" 
+              className="text-lg px-10 py-6 h-auto group"
+              onClick={() => openModal("creator")}
+            >
+              Start Matching
+              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="outline-hero" size="lg" className="text-lg px-10 py-6 h-auto">
-              I'm a Brand
+            <Button 
+              variant="outline-hero" 
+              size="lg" 
+              className="text-lg px-10 py-6 h-auto"
+              onClick={() => openModal("brand")}
+            >
+              Learn More
               <TrendingUp className="ml-2 h-5 w-5" />
             </Button>
           </div>
@@ -40,9 +66,11 @@ export const Hero = () => {
       </div>
       
       <div className="absolute inset-0 -z-10 opacity-10">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-float" style={{ animationDelay: "1.5s" }}></div>
       </div>
+
+      <SignupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} defaultType={modalType} />
     </section>
   );
 };

@@ -1,44 +1,87 @@
 import { UserPlus, Search, Handshake, TrendingUp } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const HowItWorks = () => {
   return (
-    <section className="py-20 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+    <section className="py-20 bg-background relative overflow-hidden">
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
             How It Works
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            From signup to successful collaboration in four simple steps
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+            Choose your journey and start matching in minutes
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <StepCard
-            number="1"
-            icon={UserPlus}
-            title="Create Profile"
-            description="Sign up and connect your social media. We'll auto-fetch your metrics and audience data."
-          />
-          <StepCard
-            number="2"
-            icon={Search}
-            title="Get Matched"
-            description="Our AI scans thousands of opportunities to find your perfect brand partnerships."
-          />
-          <StepCard
-            number="3"
-            icon={Handshake}
-            title="Connect & Negotiate"
-            description="Review matches, connect with brands, and finalize collaboration terms transparently."
-          />
-          <StepCard
-            number="4"
-            icon={TrendingUp}
-            title="Deliver & Earn"
-            description="Create content, track performance, and get paid. Build long-term partnerships."
-          />
-        </div>
+        <Tabs defaultValue="influencer" className="max-w-5xl mx-auto mb-16">
+          <TabsList className="grid w-full grid-cols-2 mb-12">
+            <TabsTrigger value="influencer" className="text-lg py-3">
+              For Influencers
+            </TabsTrigger>
+            <TabsTrigger value="brand" className="text-lg py-3">
+              For Brands
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="influencer">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <StepCard
+                number="1"
+                icon={UserPlus}
+                title="Create Profile"
+                description="Connect your Instagram and we'll automatically fetch your metrics, audience demographics, and engagement data."
+              />
+              <StepCard
+                number="2"
+                icon={Search}
+                title="Get Matched"
+                description="Our AI analyzes your content style and audience to find campaigns that perfectly align with your niche."
+              />
+              <StepCard
+                number="3"
+                icon={Handshake}
+                title="Review & Connect"
+                description="Browse matched campaigns, see transparent budgets, and connect directly with brands you love."
+              />
+              <StepCard
+                number="4"
+                icon={TrendingUp}
+                title="Create & Earn"
+                description="Deliver your content, track performance in real-time, and receive payment securely through our platform."
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="brand">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <StepCard
+                number="1"
+                icon={UserPlus}
+                title="Post Campaign"
+                description="Define your campaign goals, budget, target audience, and content requirements in minutes."
+              />
+              <StepCard
+                number="2"
+                icon={Search}
+                title="Get Recommendations"
+                description="Receive AI-curated creator recommendations based on audience fit, engagement quality, and past performance."
+              />
+              <StepCard
+                number="3"
+                icon={Handshake}
+                title="Review & Select"
+                description="Browse creator portfolios, compare metrics, and shortlist the perfect creators for your campaign."
+              />
+              <StepCard
+                number="4"
+                icon={TrendingUp}
+                title="Launch & Measure"
+                description="Manage collaborations, track campaign analytics, and measure ROI with detailed performance reports."
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
 
         <div className="mt-16 text-center">
           <div className="inline-block bg-primary/10 border border-primary/20 rounded-2xl px-8 py-6">
