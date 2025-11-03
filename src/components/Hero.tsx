@@ -1,17 +1,31 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "@/assets/cloutcash-logo.png";
 import { SignupModal } from "./SignupModal";
 import { ThemeToggle } from "./ThemeToggle";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"creator" | "brand">("creator");
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   const openModal = (type: "creator" | "brand") => {
     setModalType(type);
     setIsModalOpen(true);
+  };
+
+  const handleSignupSuccess = () => {
+    navigate("/dashboard");
   };
 
   return (
@@ -70,7 +84,12 @@ export const Hero = () => {
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-float" style={{ animationDelay: "1.5s" }}></div>
       </div>
 
-      <SignupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} defaultType={modalType} />
+      <SignupModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        defaultType={modalType}
+        onSuccess={handleSignupSuccess}
+      />
     </section>
   );
 };
