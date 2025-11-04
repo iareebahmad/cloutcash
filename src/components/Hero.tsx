@@ -10,14 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 export const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"creator" | "brand">("creator");
-  const { user } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
 
   const openModal = (type: "creator" | "brand") => {
     setModalType(type);
@@ -30,11 +23,6 @@ export const Hero = () => {
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted">
-      {/* Theme Toggle */}
-      <div className="absolute top-6 right-6 z-20">
-        <ThemeToggle />
-      </div>
-
       <div className="container mx-auto px-4 py-20 md:py-32 animate-fade-in">
         <div className="flex flex-col items-center text-center">
           <img src={logo} alt="CloutCash Logo" className="h-20 md:h-24 mb-8 animate-fade-in" />
