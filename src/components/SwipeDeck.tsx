@@ -4,7 +4,8 @@ import { ScoredCandidate, Influencer } from '@/types/matchmaking';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Heart, X, Star, MapPin, Users, TrendingUp, DollarSign } from 'lucide-react';
+import { Heart, X, MapPin, Users, TrendingUp, DollarSign } from 'lucide-react';
+import { MatchModal } from '@/components/MatchModal';
 
 interface SwipeDeckProps {
   candidates: ScoredCandidate<Influencer>[];
@@ -16,6 +17,8 @@ interface SwipeDeckProps {
 export function SwipeDeck({ candidates, onSwipe, onLoadMore, hasMore }: SwipeDeckProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [exitX, setExitX] = useState(0);
+  const [showMatchModal, setShowMatchModal] = useState(false);
+  const [matchedProfile, setMatchedProfile] = useState<{ name: string; avatar: string; niche: string } | null>(null);
 
   const currentCandidate = candidates[currentIndex];
 
@@ -54,6 +57,16 @@ export function SwipeDeck({ candidates, onSwipe, onLoadMore, hasMore }: SwipeDec
     if (direction === 'right') setExitX(200);
     if (direction === 'left') setExitX(-200);
 
+    // 30% chance of mutual match for demo
+    if (direction === 'right' && Math.random() > 0.7) {
+      setMatchedProfile({
+        name: currentCandidate.item.name || currentCandidate.item.handle,
+        avatar: currentCandidate.item.avatar || '',
+        niche: currentCandidate.item.niches[0]
+      });
+      setShowMatchModal(true);
+    }
+
     onSwipe(currentCandidate.item.id, direction);
     
     setTimeout(() => {
@@ -73,10 +86,19 @@ export function SwipeDeck({ candidates, onSwipe, onLoadMore, hasMore }: SwipeDec
     );
   }
 
-  const { item: influencer, score, why } = currentCandidate;
+  const { item: influencer } = currentCandidate;
 
   return (
-    <div className="relative w-full max-w-md mx-auto h-[600px]">
+    <>
+      {matchedProfile && (
+        <MatchModal 
+          isOpen={showMatchModal} 
+          onClose={() => setShowMatchModal(false)}
+          matchProfile={matchedProfile}
+        />
+      )}
+      
+      <div className="relative w-full max-w-md mx-auto h-[600px]">
       <motion.div
         style={{
           x,
@@ -101,17 +123,16 @@ export function SwipeDeck({ candidates, onSwipe, onLoadMore, hasMore }: SwipeDec
               />
             )}
             <div className="absolute top-4 right-4 bg-background/90 backdrop-blur px-3 py-1 rounded-full">
-              <span className="text-sm font-semibold text-primary">
-                {Math.round(score * 100)}% Match
-              </span>
+              <Badge variant="secondary">{influencer.niches[0]}</Badge>
             </div>
           </div>
 
           {/* Content */}
           <div className="p-6 space-y-4">
             <div>
-              <h3 className="text-2xl font-bold">{influencer.handle}</h3>
-              <p className="text-muted-foreground mt-1">{influencer.bio}</p>
+              <h3 className="text-2xl font-bold">{influencer.name || influencer.handle}</h3>
+              <p className="text-sm text-muted-foreground">{influencer.handle}</p>
+              <p className="text-muted-foreground mt-2">{influencer.bio}</p>
             </div>
 
             {/* Stats Grid */}
@@ -134,15 +155,6 @@ export function SwipeDeck({ candidates, onSwipe, onLoadMore, hasMore }: SwipeDec
               </div>
             </div>
 
-            {/* Niches */}
-            <div className="flex flex-wrap gap-2">
-              {influencer.niches.map(niche => (
-                <Badge key={niche} variant="secondary">
-                  {niche}
-                </Badge>
-              ))}
-            </div>
-
             {/* Platforms */}
             <div className="flex gap-2">
               {influencer.platforms.map(platform => (
@@ -151,52 +163,31 @@ export function SwipeDeck({ candidates, onSwipe, onLoadMore, hasMore }: SwipeDec
                 </Badge>
               ))}
             </div>
-
-            {/* Why this match */}
-            <div className="bg-primary/5 rounded-lg p-3 border border-primary/20">
-              <p className="text-xs font-semibold text-primary mb-2">Why this match?</p>
-              <div className="flex flex-wrap gap-1">
-                {why.map((reason, i) => (
-                  <Badge key={i} variant="secondary" className="text-xs">
-                    {reason}
-                  </Badge>
-                ))}
-              </div>
-            </div>
           </div>
         </Card>
       </motion.div>
 
       {/* Action Buttons */}
-      <div className="absolute -bottom-20 left-0 right-0 flex justify-center gap-4">
+      <div className="absolute -bottom-20 left-0 right-0 flex justify-center gap-6">
         <Button
           size="lg"
           variant="outline"
-          className="w-16 h-16 rounded-full"
+          className="w-16 h-16 rounded-full border-2 hover:border-destructive hover:bg-destructive/10"
           onClick={() => handleSwipe('left')}
           aria-label="Pass"
         >
-          <X className="w-6 h-6" />
+          <X className="w-7 h-7 text-destructive" />
         </Button>
         <Button
           size="lg"
-          variant="default"
-          className="w-16 h-16 rounded-full"
+          className="w-20 h-20 rounded-full bg-primary hover:bg-primary/90 shadow-lg"
           onClick={() => handleSwipe('right')}
           aria-label="Like"
         >
-          <Heart className="w-6 h-6" />
-        </Button>
-        <Button
-          size="lg"
-          variant="outline"
-          className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary/70"
-          onClick={() => handleSwipe('up')}
-          aria-label="Super Like"
-        >
-          <Star className="w-6 h-6" />
+          <Heart className="w-8 h-8 fill-primary-foreground" />
         </Button>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

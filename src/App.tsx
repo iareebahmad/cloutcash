@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import DashboardPage from "./pages/DashboardPage";
 import MatchPage from "./pages/MatchPage";
+import MatchesPage from "./pages/MatchesPage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -34,6 +36,22 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <MatchPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/matches" 
+            element={
+              <ProtectedRoute>
+                <MatchesPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             } 
           />

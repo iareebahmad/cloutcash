@@ -1,6 +1,7 @@
 export interface Influencer {
   id: string;
   handle: string;
+  name?: string;
   platforms: string[];
   niches: string[];
   audienceGeo: string[];
@@ -17,6 +18,7 @@ export interface Influencer {
   fraudRisk: number; // 0-1
   avatar?: string;
   bio?: string;
+  followerBracket?: string;
 }
 
 export interface BrandCampaign {
@@ -37,6 +39,7 @@ export interface BrandCampaign {
   budgetCoins: number;
   logo?: string;
   description?: string;
+  budgetBracket?: string;
 }
 
 export type InteractionType = 'like' | 'pass' | 'superlike' | 'match';

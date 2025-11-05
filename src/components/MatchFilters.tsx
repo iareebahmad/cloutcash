@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { MatchFilters as Filters } from '@/types/matchmaking';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { MatchFilters as MatchFiltersType } from '@/types/matchmaking';
+import { SlidersHorizontal, Lock } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -9,185 +11,126 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Filter, X } from 'lucide-react';
 
 interface MatchFiltersProps {
-  onFilterChange: (filters: Filters) => void;
+  onFilterChange: (filters: MatchFiltersType) => void;
 }
 
-const PLATFORMS = ['Instagram', 'YouTube', 'TikTok', 'Twitter', 'Twitch'];
-const NICHES = ['Fashion', 'Technology', 'Fitness', 'Beauty', 'Gaming', 'Food', 'Travel', 'Lifestyle'];
-const GEOS = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 'Pune'];
-
 export function MatchFilters({ onFilterChange }: MatchFiltersProps) {
-  const [filters, setFilters] = useState<Filters>({});
-  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<MatchFiltersType>({});
+  const [selectedNiche, setSelectedNiche] = useState<string>('');
+  const [selectedFollowers, setSelectedFollowers] = useState<string>('');
+  const [selectedBudget, setSelectedBudget] = useState<string>('');
 
-  const updateFilter = (key: keyof Filters, value: any) => {
-    const newFilters = { ...filters, [key]: value };
+  const niches = ['Fashion', 'Beauty', 'Fitness', 'Food', 'Travel', 'Technology', 'Gaming', 'Lifestyle'];
+  const followerBrackets = ['10k-60k', '60k-260k', '260k+'];
+  const budgetBrackets = ['Under 20k', '20k-50k', '50k+'];
+
+  const handleNicheChange = (value: string) => {
+    setSelectedNiche(value);
+    const newFilters = { ...filters, niches: value ? [value] : undefined };
     setFilters(newFilters);
     onFilterChange(newFilters);
   };
 
-  const addArrayFilter = (key: 'platforms' | 'niches' | 'geo', value: string) => {
-    const current = filters[key] || [];
-    if (!current.includes(value)) {
-      updateFilter(key, [...current, value]);
-    }
+  const handleFollowersChange = (value: string) => {
+    setSelectedFollowers(value);
   };
 
-  const removeArrayFilter = (key: 'platforms' | 'niches' | 'geo', value: string) => {
-    const current = filters[key] || [];
-    updateFilter(key, current.filter(v => v !== value));
+  const handleBudgetChange = (value: string) => {
+    setSelectedBudget(value);
   };
 
   const clearFilters = () => {
     setFilters({});
+    setSelectedNiche('');
+    setSelectedFollowers('');
+    setSelectedBudget('');
     onFilterChange({});
   };
 
-  const activeFilterCount = Object.keys(filters).filter(k => {
-    const val = filters[k as keyof Filters];
-    return Array.isArray(val) ? val.length > 0 : val !== undefined;
-  }).length;
+  const activeFilterCount = selectedNiche ? 1 : 0;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={() => setShowFilters(!showFilters)}
-          className="gap-2"
-        >
-          <Filter className="w-4 h-4" />
-          Filters
+    <div className="w-full">
+      <Card className="p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <SlidersHorizontal className="w-4 h-4" />
+          <h3 className="font-semibold">Filters</h3>
           {activeFilterCount > 0 && (
-            <Badge variant="secondary" className="ml-1">
-              {activeFilterCount}
-            </Badge>
+            <Badge variant="secondary">{activeFilterCount}</Badge>
           )}
-        </Button>
-        {activeFilterCount > 0 && (
-          <Button variant="ghost" size="sm" onClick={clearFilters}>
-            Clear all
-          </Button>
-        )}
-      </div>
+        </div>
 
-      {showFilters && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-muted/50 rounded-lg border">
-          {/* Platform Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Platform</label>
-            <Select onValueChange={(v) => addArrayFilter('platforms', v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select platform" />
-              </SelectTrigger>
-              <SelectContent>
-                {PLATFORMS.map(p => (
-                  <SelectItem key={p} value={p}>{p}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="flex flex-wrap gap-1">
-              {filters.platforms?.map(p => (
-                <Badge key={p} variant="secondary" className="gap-1">
-                  {p}
-                  <X
-                    className="w-3 h-3 cursor-pointer"
-                    onClick={() => removeArrayFilter('platforms', p)}
-                  />
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          {/* Niche Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Niche</label>
-            <Select onValueChange={(v) => addArrayFilter('niches', v)}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Category Filter */}
+          <div>
+            <label className="text-sm font-medium mb-2 block">Category</label>
+            <Select value={selectedNiche} onValueChange={handleNicheChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select niche" />
               </SelectTrigger>
               <SelectContent>
-                {NICHES.map(n => (
-                  <SelectItem key={n} value={n}>{n}</SelectItem>
+                <SelectItem value="">All</SelectItem>
+                {niches.map(niche => (
+                  <SelectItem key={niche} value={niche}>{niche}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <div className="flex flex-wrap gap-1">
-              {filters.niches?.map(n => (
-                <Badge key={n} variant="secondary" className="gap-1">
-                  {n}
-                  <X
-                    className="w-3 h-3 cursor-pointer"
-                    onClick={() => removeArrayFilter('niches', n)}
-                  />
-                </Badge>
-              ))}
-            </div>
           </div>
 
-          {/* Geo Filter */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Location</label>
-            <Select onValueChange={(v) => addArrayFilter('geo', v)}>
+          {/* Follower Bracket */}
+          <div>
+            <label className="text-sm font-medium mb-2 block">Followers</label>
+            <Select value={selectedFollowers} onValueChange={handleFollowersChange}>
               <SelectTrigger>
-                <SelectValue placeholder="Select location" />
+                <SelectValue placeholder="Select range" />
               </SelectTrigger>
               <SelectContent>
-                {GEOS.map(g => (
-                  <SelectItem key={g} value={g}>{g}</SelectItem>
+                <SelectItem value="">All</SelectItem>
+                {followerBrackets.map(bracket => (
+                  <SelectItem key={bracket} value={bracket}>{bracket}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <div className="flex flex-wrap gap-1">
-              {filters.geo?.map(g => (
-                <Badge key={g} variant="secondary" className="gap-1">
-                  {g}
-                  <X
-                    className="w-3 h-3 cursor-pointer"
-                    onClick={() => removeArrayFilter('geo', g)}
-                  />
-                </Badge>
-              ))}
-            </div>
           </div>
 
-          {/* Min Engagement */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Min Engagement Rate (%)</label>
-            <Select onValueChange={(v) => updateFilter('minEngagement', parseFloat(v))}>
+          {/* Budget Filter */}
+          <div>
+            <label className="text-sm font-medium mb-2 block">Budget per Post</label>
+            <Select value={selectedBudget} onValueChange={handleBudgetChange}>
               <SelectTrigger>
-                <SelectValue placeholder="Any" />
+                <SelectValue placeholder="Select budget" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="0">Any</SelectItem>
-                <SelectItem value="3">3%+</SelectItem>
-                <SelectItem value="4">4%+</SelectItem>
-                <SelectItem value="5">5%+</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Max Price */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Max Price (₹)</label>
-            <Select onValueChange={(v) => updateFilter('maxPrice', parseInt(v))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Any" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="999999">Any</SelectItem>
-                <SelectItem value="20000">20K</SelectItem>
-                <SelectItem value="35000">35K</SelectItem>
-                <SelectItem value="50000">50K</SelectItem>
-                <SelectItem value="75000">75K</SelectItem>
+                <SelectItem value="">All</SelectItem>
+                {budgetBrackets.map(bracket => (
+                  <SelectItem key={bracket} value={bracket}>{bracket}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
         </div>
-      )}
+
+        {/* Premium Filters Locked */}
+        <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-dashed">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Lock className="w-4 h-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                Advanced filters (Engagement Rate, Location, Gender Mix)
+              </span>
+            </div>
+            <Badge variant="secondary" className="bg-primary/20 text-primary">Premium</Badge>
+          </div>
+        </div>
+
+        {activeFilterCount > 0 && (
+          <Button variant="outline" size="sm" onClick={clearFilters} className="mt-4 w-full">
+            Clear all filters
+          </Button>
+        )}
+      </Card>
     </div>
   );
 }
