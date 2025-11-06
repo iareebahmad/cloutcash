@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MatchFilters as MatchFiltersType } from '@/types/matchmaking';
 import { SlidersHorizontal, Lock } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 import {
   Select,
   SelectContent,
@@ -50,6 +51,14 @@ export function MatchFilters({ onFilterChange }: MatchFiltersProps) {
   };
 
   const activeFilterCount = selectedNiche ? 1 : 0;
+
+  const showPremiumToast = () => {
+    toast({
+      title: '🔒 Premium Feature',
+      description: 'Advanced filters are available in the Premium Plan. Upgrade to access engagement rate, location, and gender mix filters.',
+      duration: 4000,
+    });
+  };
 
   return (
     <div className="w-full">
@@ -113,7 +122,10 @@ export function MatchFilters({ onFilterChange }: MatchFiltersProps) {
         </div>
 
         {/* Premium Filters Locked */}
-        <div className="mt-4 p-3 bg-muted/50 rounded-lg border border-dashed">
+        <div 
+          className="mt-4 p-3 bg-muted/50 rounded-lg border border-dashed cursor-pointer hover:bg-muted/70 transition-colors"
+          onClick={showPremiumToast}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Lock className="w-4 h-4 text-muted-foreground" />

@@ -2,9 +2,51 @@ import { Influencer, BrandCampaign, Interaction, InteractionType, ScoredCandidat
 import { mockInfluencers, mockBrandCampaigns, mockInteractions } from './mockData';
 import { rankCandidates } from './matchmaker';
 
-// In-memory storage for interactions
-let interactions: Interaction[] = [...mockInteractions];
-const seenIds = new Set<string>();
+// LocalStorage keys
+const STORAGE_KEYS = {
+  INTERACTIONS: 'cloutcash_interactions',
+  SEEN_IDS: 'cloutcash_seen_ids'
+};
+
+// Load from localStorage
+const loadInteractions = (): Interaction[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.INTERACTIONS);
+    return stored ? JSON.parse(stored) : [...mockInteractions];
+  } catch {
+    return [...mockInteractions];
+  }
+};
+
+const loadSeenIds = (): Set<string> => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.SEEN_IDS);
+    return stored ? new Set(JSON.parse(stored)) : new Set<string>();
+  } catch {
+    return new Set<string>();
+  }
+};
+
+// In-memory storage for interactions with localStorage sync
+let interactions: Interaction[] = loadInteractions();
+const seenIds = loadSeenIds();
+
+// Save to localStorage
+const saveInteractions = () => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.INTERACTIONS, JSON.stringify(interactions));
+  } catch (error) {
+    console.error('Failed to save interactions:', error);
+  }
+};
+
+const saveSeenIds = () => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.SEEN_IDS, JSON.stringify([...seenIds]));
+  } catch (error) {
+    console.error('Failed to save seen IDs:', error);
+  }
+};
 
 export const mockApi = {
   async getRankedBatch(
@@ -36,6 +78,7 @@ export const mockApi = {
     
     // Mark as seen
     batch.forEach(c => seenIds.add(c.item.id));
+    saveSeenIds();
     
     return {
       candidates: batch,
@@ -58,6 +101,7 @@ export const mockApi = {
     };
     
     interactions.push(interaction);
+    saveInteractions();
     
     // Track analytics
     console.log(`[Analytics] ${type}:`, { userId, targetId, ts: interaction.ts });
@@ -69,10 +113,13 @@ export const mockApi = {
 
   clearSeenIds() {
     seenIds.clear();
+    saveSeenIds();
   },
 
-  resetInteractions() {
-    interactions = [];
+  resetDemo() {
+    interactions = [...mockInteractions];
     seenIds.clear();
+    saveInteractions();
+    saveSeenIds();
   }
 };

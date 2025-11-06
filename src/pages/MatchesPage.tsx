@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Heart, MessageCircle, Lock } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from '@/hooks/use-toast';
 
 interface Match {
   id: string;
@@ -35,6 +36,14 @@ const mockMatches: Match[] = [
 
 const MatchesPage = () => {
   const [matches] = useState<Match[]>(mockMatches);
+
+  const showPremiumToast = () => {
+    toast({
+      title: '🔒 Premium Feature',
+      description: 'Chat is available in the Premium Plan. Upgrade to start conversations with your matches.',
+      duration: 4000,
+    });
+  };
 
   const formatMatchTime = (date: Date) => {
     const hours = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60));
@@ -95,7 +104,7 @@ const MatchesPage = () => {
                       <Button 
                         size="icon" 
                         variant="outline"
-                        disabled
+                        onClick={showPremiumToast}
                         className="relative"
                       >
                         <MessageCircle className="w-5 h-5" />

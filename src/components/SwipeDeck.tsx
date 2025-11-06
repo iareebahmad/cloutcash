@@ -76,12 +76,21 @@ export function SwipeDeck({ candidates, onSwipe, onLoadMore, hasMore }: SwipeDec
     }, 200);
   };
 
+  const handleReset = () => {
+    const { mockApi } = require('@/lib/mockApi');
+    mockApi.resetDemo();
+    window.location.reload();
+  };
+
   if (!currentCandidate) {
     return (
       <div className="flex flex-col items-center justify-center h-[600px] space-y-4">
         <Users className="w-16 h-16 text-muted-foreground" />
         <h3 className="text-xl font-semibold">No more matches</h3>
         <p className="text-muted-foreground">Check back later for new opportunities!</p>
+        <Button onClick={handleReset} variant="outline" className="mt-4">
+          Reset Demo
+        </Button>
       </div>
     );
   }

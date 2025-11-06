@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Heart, Lock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
 
 interface MatchModalProps {
   isOpen: boolean;
@@ -14,26 +15,34 @@ interface MatchModalProps {
 }
 
 export function MatchModal({ isOpen, onClose, matchProfile }: MatchModalProps) {
+  const showPremiumToast = () => {
+    toast({
+      title: '🔒 Premium Feature',
+      description: 'Chat is available in the Premium Plan. Upgrade to start conversations with your matches.',
+      duration: 4000,
+    });
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md animate-in zoom-in-95 duration-300">
         <DialogHeader>
           <DialogTitle className="text-center text-2xl font-bold">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Heart className="w-8 h-8 text-primary fill-primary animate-pulse" />
-              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <div className="flex items-center justify-center gap-2 mb-4 animate-in bounce-in-0 duration-500">
+              <Heart className="w-8 h-8 text-primary fill-primary animate-pulse drop-shadow-[0_0_8px_rgba(230,57,70,0.6)]" />
+              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent drop-shadow-lg">
                 It's a Match!
               </span>
-              <Heart className="w-8 h-8 text-primary fill-primary animate-pulse" />
+              <Heart className="w-8 h-8 text-primary fill-primary animate-pulse drop-shadow-[0_0_8px_rgba(230,57,70,0.6)]" />
             </div>
           </DialogTitle>
         </DialogHeader>
         
-        <div className="flex flex-col items-center gap-4 py-4">
+        <div className="flex flex-col items-center gap-4 py-4 animate-in fade-in-0 slide-in-from-bottom-4 duration-500 delay-150">
           <img 
             src={matchProfile.avatar} 
             alt={matchProfile.name}
-            className="w-32 h-32 rounded-full object-cover border-4 border-primary"
+            className="w-32 h-32 rounded-full object-cover border-4 border-primary shadow-[0_0_20px_rgba(230,57,70,0.4)] animate-in zoom-in-0 duration-500 delay-300"
           />
           
           <div className="text-center">
@@ -47,8 +56,8 @@ export function MatchModal({ isOpen, onClose, matchProfile }: MatchModalProps) {
 
           <div className="flex flex-col gap-2 w-full mt-4">
             <Button 
-              disabled 
-              className="w-full relative"
+              onClick={showPremiumToast}
+              className="w-full relative bg-muted hover:bg-muted/80 text-foreground"
             >
               <Lock className="w-4 h-4 mr-2" />
               Start Chat
