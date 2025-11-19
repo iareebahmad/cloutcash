@@ -74,13 +74,9 @@ const MessagesPage = () => {
     const fetchConversations = async () => {
       if (!currentProfile) return;
 
-      const { data, error } = await supabase
+      const { data: convData, error } = await supabase
         .from("conversations")
-        .select(`
-          *,
-          creator_profile:profiles!conversations_creator_id_fkey(*),
-          brand_profile:profiles!conversations_brand_id_fkey(*)
-        `)
+        .select("*")
         .or(`creator_id.eq.${currentProfile.id},brand_id.eq.${currentProfile.id}`)
         .order("last_message_at", { ascending: false });
 
@@ -89,19 +85,41 @@ const MessagesPage = () => {
         return;
       }
 
+      if (!convData || convData.length === 0) {
+        setConversations([]);
+        return;
+      }
+
+      // Get all unique profile IDs
+      const profileIds = new Set<string>();
+      convData.forEach((conv) => {
+        profileIds.add(conv.creator_id);
+        profileIds.add(conv.brand_id);
+      });
+
+      // Fetch all profiles at once
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("*")
+        .in("id", Array.from(profileIds));
+
+      const profileMap = new Map(profiles?.map((p) => [p.id, p]) || []);
+
       // Fetch last message for each conversation
       const conversationsWithMessages = await Promise.all(
-        (data || []).map(async (conv) => {
+        convData.map(async (conv) => {
           const { data: lastMsg } = await supabase
             .from("messages")
             .select("content, created_at")
             .eq("conversation_id", conv.id)
             .order("created_at", { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle();
 
           return {
             ...conv,
+            creator_profile: profileMap.get(conv.creator_id),
+            brand_profile: profileMap.get(conv.brand_id),
             last_message: lastMsg || undefined,
           };
         })
