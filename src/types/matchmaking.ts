@@ -64,6 +64,7 @@ export interface MatchFilters {
   maxBudget?: number;
   minEngagement?: number;
   maxPrice?: number;
+  minFollowers?: number;
 }
 
 export interface UserContext {
