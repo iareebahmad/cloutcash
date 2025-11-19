@@ -48,21 +48,14 @@ export default function DiscoverPage() {
 
     const cardId = currentCandidate.item.id;
     
-    // Set exit direction for animation
     setExitDirection(direction);
-    
-    // Fire-and-forget backend call (don't wait)
     const interactionType = direction === 'right' ? 'like' : direction === 'up' ? 'superlike' : 'pass';
     recordFeedback(cardId, interactionType);
-
-    // Immediately remove card from stack after animation starts
-    setTimeout(() => {
-      setSwipedCardIds(prev => new Set(prev).add(cardId));
-      setExitDirection(null);
-      // Reset motion values for next card
-      x.set(0);
-      y.set(0);
-    }, 300);
+    setSwipedCardIds(prev => {
+      const next = new Set(prev);
+      next.add(cardId);
+      return next;
+    });
   };
 
   const handleDragEnd = (event: any, info: PanInfo) => {
@@ -81,25 +74,24 @@ export default function DiscoverPage() {
   const handleApplyFilters = async () => {
     setIsApplyingFilters(true);
     
-    updateFilters({
+    await updateFilters({
       niches: filterNiches ? filterNiches.split(',').map(n => n.trim()) : undefined,
       geo: filterLocation ? filterLocation.split(',').map(l => l.trim()) : undefined,
       maxPrice: filterBudgetRange[1] > 0 ? filterBudgetRange[1] : undefined,
       minEngagement: filterEngagement[0] > 0 ? filterEngagement[0] : undefined,
+      minFollowers: filterFollowers[0] > 0 ? filterFollowers[0] : undefined,
     });
+    await refetch();
     
     // Clear swiped cards when applying new filters
     setSwipedCardIds(new Set());
     setExitDirection(null);
+    setIsApplyingFilters(false);
     
-    // Wait for filters to apply
-    setTimeout(() => {
-      setIsApplyingFilters(false);
-      toast({
-        title: "Filters Applied",
-        description: "Showing updated results",
-      });
-    }, 500);
+    toast({
+      title: "Filters Applied",
+      description: "Showing updated results",
+    });
   };
 
   const handleClearFilters = () => {
@@ -292,6 +284,13 @@ export default function DiscoverPage() {
                     dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
                     dragElastic={0.7}
                     onDragEnd={handleDragEnd}
+                    onAnimationComplete={(definition) => {
+                      if (definition === 'exit') {
+                        x.set(0);
+                        y.set(0);
+                        setExitDirection(null);
+                      }
+                    }}
                     className="absolute inset-0 cursor-grab active:cursor-grabbing"
                   >
                     <Card className="h-full bg-card border-2 border-primary/20 overflow-hidden shadow-[0_0_40px_rgba(354,78%,58%,0.25)] hover:shadow-[0_0_50px_rgba(354,78%,58%,0.35)] transition-shadow">
