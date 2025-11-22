@@ -1,54 +1,103 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import logo from "@/assets/cloutcash-logo.png";
+import { HeroAnimation } from "./HeroAnimation";
 
 export const Hero = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted">
-      <div className="container mx-auto px-4 py-20 md:py-32 animate-fade-in">
-        <div className="flex flex-col items-center text-center">
-          <img src={logo} alt="CloutCash Logo" className="h-20 md:h-24 mb-8 animate-fade-in" />
-          
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent leading-tight">
-            Where Micro-Influencers
-            <br />
-            Meet Brand Opportunities
-          </h1>
-          
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mb-12">
-            IP-driven matchmaking platform connecting micro-influencers (10K-100K followers) 
-            with transparent, data-backed brand collaborations. Earn consistently with measurable ROI.
-          </p>
+    <section className="relative overflow-hidden bg-gradient-to-br from-background via-background to-muted min-h-screen flex items-center">
+      <div className="container mx-auto px-4 py-20 md:py-32">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Left side - Text content */}
+          <motion.div 
+            className="flex flex-col text-center lg:text-left items-center lg:items-start"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <img 
+              src={logo} 
+              alt="CloutCash Logo" 
+              className="h-16 md:h-20 mb-6 lg:mb-8" 
+            />
+            
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent leading-tight"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              Where Micro-Influencers
+              <br />
+              Meet Brand Opportunities
+            </motion.h1>
+            
+            <motion.p 
+              className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mb-8 lg:mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              IP-driven matchmaking platform connecting micro-influencers (10K-100K followers) 
+              with transparent, data-backed brand collaborations. Earn consistently with measurable ROI.
+            </motion.p>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-16">
-            <Button 
-              variant="hero" 
-              size="lg" 
-              className="text-lg px-10 py-6 h-auto group"
-              onClick={() => navigate("/login")}
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 mb-12 lg:mb-16 w-full sm:w-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
             >
-              Start Matching
-              <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button 
-              variant="outline-hero" 
-              size="lg" 
-              className="text-lg px-10 py-6 h-auto"
-              onClick={() => navigate("/login")}
+              <Button 
+                variant="hero" 
+                size="lg" 
+                className="text-base lg:text-lg px-8 lg:px-10 py-5 lg:py-6 h-auto group"
+                onClick={() => navigate("/login")}
+              >
+                Get Started
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              <Button 
+                variant="outline-hero" 
+                size="lg" 
+                className="text-base lg:text-lg px-8 lg:px-10 py-5 lg:py-6 h-auto"
+                onClick={() => navigate("/login")}
+              >
+                Book a Demo
+                <TrendingUp className="ml-2 h-5 w-5" />
+              </Button>
+            </motion.div>
+
+            <motion.div 
+              className="grid grid-cols-3 gap-4 lg:gap-6 w-full max-w-2xl"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8 }}
             >
-              Learn More
-              <TrendingUp className="ml-2 h-5 w-5" />
-            </Button>
+              <StatCard number="10K+" label="Active Creators" />
+              <StatCard number="500+" label="Brand Partners" />
+              <StatCard number="95%" label="Match Success" />
+            </motion.div>
+          </motion.div>
+
+          {/* Right side - Animation */}
+          <div className="hidden lg:block">
+            <HeroAnimation />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
-            <StatCard number="10K+" label="Active Creators" />
-            <StatCard number="500+" label="Brand Partners" />
-            <StatCard number="95%" label="Match Success" />
-          </div>
+          {/* Mobile animation - centered below text */}
+          <motion.div 
+            className="lg:hidden -mx-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <HeroAnimation />
+          </motion.div>
         </div>
       </div>
       
