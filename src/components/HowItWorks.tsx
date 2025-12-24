@@ -1,6 +1,6 @@
 import { UserPlus, Search, Handshake, TrendingUp, Check } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 
@@ -9,7 +9,53 @@ interface Step {
   icon: LucideIcon;
   title: string;
   description: string;
+  microCopy: string[];
 }
+
+// Animated micro-copy component
+const MicroCopyAnimator = ({ phrases, isActive }: { phrases: string[]; isActive: boolean }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (!isActive) {
+      setCurrentIndex(0);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % phrases.length);
+    }, 1800);
+
+    return () => clearInterval(interval);
+  }, [isActive, phrases.length]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 5 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -5 }}
+      className="h-5 mt-2 flex items-center justify-center"
+    >
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={currentIndex}
+          initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -8, filter: "blur(4px)" }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="text-xs font-medium text-primary-foreground/70 flex items-center gap-1.5"
+        >
+          <motion.span
+            animate={{ opacity: [0.4, 1, 0.4] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+            className="w-1.5 h-1.5 rounded-full bg-primary-foreground/60"
+          />
+          {phrases[currentIndex]}
+        </motion.span>
+      </AnimatePresence>
+    </motion.div>
+  );
+};
 
 export const HowItWorks = () => {
   const [activeInfluencerStep, setActiveInfluencerStep] = useState(0);
@@ -23,24 +69,28 @@ export const HowItWorks = () => {
       icon: UserPlus,
       title: "Create Profile",
       description: "Connect your Instagram and we'll automatically fetch your metrics, audience demographics, and engagement data.",
+      microCopy: ["Syncing metrics...", "Analyzing audience...", "Profile ready!"],
     },
     {
       number: "2",
       icon: Search,
       title: "Get Matched",
       description: "Our AI intelligently analyzes your content style and audience to find campaigns that perfectly align with your niche.",
+      microCopy: ["Finding matches...", "Scoring compatibility...", "3 matches found!"],
     },
     {
       number: "3",
       icon: Handshake,
       title: "Review & Connect",
       description: "Browse matched campaigns, see transparent budgets, and connect directly with brands you truly love.",
+      microCopy: ["Loading campaigns...", "Checking budgets...", "Ready to connect!"],
     },
     {
       number: "4",
       icon: TrendingUp,
       title: "Create & Earn",
       description: "Deliver your content, track performance in real-time, and receive payment securely through our streamlined and reliable platform.",
+      microCopy: ["Tracking views...", "Processing payment...", "Earnings updated!"],
     },
   ];
 
@@ -50,24 +100,28 @@ export const HowItWorks = () => {
       icon: UserPlus,
       title: "Post Campaign",
       description: "Define your campaign goals, budget, target audience, and content requirements in just a few minutes.",
+      microCopy: ["Setting goals...", "Defining audience...", "Campaign live!"],
     },
     {
       number: "2",
       icon: Search,
       title: "Get Recommendations",
       description: "Receive AI-curated creator recommendations based on quality and performance metrics.",
+      microCopy: ["Scanning creators...", "Ranking by fit...", "12 creators matched!"],
     },
     {
       number: "3",
       icon: Handshake,
       title: "Review & Select",
       description: "Browse creator portfolios, compare metrics, and shortlist the perfect creators for your campaign in a jiffy.",
+      microCopy: ["Loading portfolios...", "Shortlisting creators...", "Ready to hire!"],
     },
     {
       number: "4",
       icon: TrendingUp,
       title: "Launch & Track",
       description: "Manage collaborations, track campaign analytics, and measure ROI with detailed performance reports.",
+      microCopy: ["Launching campaign...", "Tracking ROI...", "Results are in!"],
     },
   ];
 
@@ -463,6 +517,16 @@ const ProgressiveStepFlow = ({
                   >
                     {step.description}
                   </motion.p>
+                )}
+              </AnimatePresence>
+
+              {/* Dynamic Micro-copy */}
+              <AnimatePresence mode="wait">
+                {isActive && (
+                  <MicroCopyAnimator 
+                    phrases={step.microCopy} 
+                    isActive={isActive} 
+                  />
                 )}
               </AnimatePresence>
             </motion.div>
