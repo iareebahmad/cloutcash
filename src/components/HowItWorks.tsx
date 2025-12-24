@@ -1,7 +1,95 @@
-import { UserPlus, Search, Handshake, TrendingUp } from "lucide-react";
+import { UserPlus, Search, Handshake, TrendingUp, Check } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
+
+interface Step {
+  number: string;
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
 
 export const HowItWorks = () => {
+  const [activeInfluencerStep, setActiveInfluencerStep] = useState(0);
+  const [activeBrandStep, setActiveBrandStep] = useState(0);
+  const [completedInfluencerSteps, setCompletedInfluencerSteps] = useState<number[]>([]);
+  const [completedBrandSteps, setCompletedBrandSteps] = useState<number[]>([]);
+
+  const influencerSteps: Step[] = [
+    {
+      number: "1",
+      icon: UserPlus,
+      title: "Create Profile",
+      description: "Connect your Instagram and we'll automatically fetch your metrics, audience demographics, and engagement data.",
+    },
+    {
+      number: "2",
+      icon: Search,
+      title: "Get Matched",
+      description: "Our AI intelligently analyzes your content style and audience to find campaigns that perfectly align with your niche.",
+    },
+    {
+      number: "3",
+      icon: Handshake,
+      title: "Review & Connect",
+      description: "Browse matched campaigns, see transparent budgets, and connect directly with brands you truly love.",
+    },
+    {
+      number: "4",
+      icon: TrendingUp,
+      title: "Create & Earn",
+      description: "Deliver your content, track performance in real-time, and receive payment securely through our streamlined and reliable platform.",
+    },
+  ];
+
+  const brandSteps: Step[] = [
+    {
+      number: "1",
+      icon: UserPlus,
+      title: "Post Campaign",
+      description: "Define your campaign goals, budget, target audience, and content requirements in just a few minutes.",
+    },
+    {
+      number: "2",
+      icon: Search,
+      title: "Get Recommendations",
+      description: "Receive AI-curated creator recommendations based on quality and performance metrics.",
+    },
+    {
+      number: "3",
+      icon: Handshake,
+      title: "Review & Select",
+      description: "Browse creator portfolios, compare metrics, and shortlist the perfect creators for your campaign in a jiffy.",
+    },
+    {
+      number: "4",
+      icon: TrendingUp,
+      title: "Launch & Track",
+      description: "Manage collaborations, track campaign analytics, and measure ROI with detailed performance reports.",
+    },
+  ];
+
+  const handleStepInteraction = (
+    index: number,
+    activeStep: number,
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>,
+    completedSteps: number[],
+    setCompletedSteps: React.Dispatch<React.SetStateAction<number[]>>
+  ) => {
+    if (index > activeStep) {
+      const newCompleted = [...completedSteps];
+      for (let i = activeStep; i < index; i++) {
+        if (!newCompleted.includes(i)) {
+          newCompleted.push(i);
+        }
+      }
+      setCompletedSteps(newCompleted);
+    }
+    setActiveStep(index);
+  };
+
   return (
     <section className="py-20 bg-background relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
@@ -25,61 +113,37 @@ export const HowItWorks = () => {
           </TabsList>
 
           <TabsContent value="influencer">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <StepCard
-                number="1"
-                icon={UserPlus}
-                title="Create Profile"
-                description="Connect your Instagram and we'll automatically fetch your metrics, audience demographics, and engagement data."
-              />
-              <StepCard
-                number="2"
-                icon={Search}
-                title="Get Matched"
-                description="Our AI intelligently analyzes your content style and audience to find campaigns that perfectly align with your niche."
-              />
-              <StepCard
-                number="3"
-                icon={Handshake}
-                title="Review & Connect"
-                description="Browse matched campaigns, see transparent budgets, and connect directly with brands you truly love."
-              />
-              <StepCard
-                number="4"
-                icon={TrendingUp}
-                title="Create & Earn"
-                description="Deliver your content, track performance in real-time, and receive payment securely through our streamlined and reliable platform."
-              />
-            </div>
+            <ProgressiveStepFlow
+              steps={influencerSteps}
+              activeStep={activeInfluencerStep}
+              completedSteps={completedInfluencerSteps}
+              onStepInteraction={(index) =>
+                handleStepInteraction(
+                  index,
+                  activeInfluencerStep,
+                  setActiveInfluencerStep,
+                  completedInfluencerSteps,
+                  setCompletedInfluencerSteps
+                )
+              }
+            />
           </TabsContent>
 
           <TabsContent value="brand">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <StepCard
-                number="1"
-                icon={UserPlus}
-                title="Post Campaign"
-                description="Define your campaign goals, budget, target audience, and content requirements in just a few minutes."
-              />
-              <StepCard
-                number="2"
-                icon={Search}
-                title="Get Recommendations"
-                description="Receive AI-curated creator recommendations based on quality and performance metrics."
-              />
-              <StepCard
-                number="3"
-                icon={Handshake}
-                title="Review & Select"
-                description="Browse creator portfolios, compare metrics, and shortlist the perfect creators for your campaign in a jiffy."
-              />
-              <StepCard
-                number="4"
-                icon={TrendingUp}
-                title="Launch & Track"
-                description="Manage collaborations, track campaign analytics, and measure ROI with detailed performance reports."
-              />
-            </div>
+            <ProgressiveStepFlow
+              steps={brandSteps}
+              activeStep={activeBrandStep}
+              completedSteps={completedBrandSteps}
+              onStepInteraction={(index) =>
+                handleStepInteraction(
+                  index,
+                  activeBrandStep,
+                  setActiveBrandStep,
+                  completedBrandSteps,
+                  setCompletedBrandSteps
+                )
+              }
+            />
           </TabsContent>
         </Tabs>
 
@@ -96,17 +160,257 @@ export const HowItWorks = () => {
   );
 };
 
-const StepCard = ({ number, icon: Icon, title, description }: { number: string; icon: any; title: string; description: string }) => (
-  <div className="relative">
-    <div className="bg-card border-2 border-border rounded-2xl p-8 text-center hover:border-primary/50 transition-colors">
-      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-lg">
-        {number}
+interface ProgressiveStepFlowProps {
+  steps: Step[];
+  activeStep: number;
+  completedSteps: number[];
+  onStepInteraction: (index: number) => void;
+}
+
+const ProgressiveStepFlow = ({
+  steps,
+  activeStep,
+  completedSteps,
+  onStepInteraction,
+}: ProgressiveStepFlowProps) => {
+  const progressPercentage = ((activeStep + 1) / steps.length) * 100;
+
+  return (
+    <div>
+      {/* Progress Indicator */}
+      <div className="mb-8 max-w-md mx-auto">
+        <div className="flex items-center justify-between mb-2">
+          {steps.map((_, index) => {
+            const isCompleted = completedSteps.includes(index);
+            const isActive = activeStep === index;
+            const isPast = index < activeStep;
+
+            return (
+              <motion.div
+                key={index}
+                className="flex flex-col items-center cursor-pointer"
+                onClick={() => onStepInteraction(index)}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <motion.div
+                  animate={{
+                    scale: isActive ? 1.2 : 1,
+                    backgroundColor:
+                      isActive || isCompleted || isPast
+                        ? "hsl(var(--primary))"
+                        : "hsl(var(--muted))",
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 500,
+                    damping: 30,
+                  }}
+                  className="w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center relative"
+                >
+                  {isCompleted || isPast ? (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 25,
+                        delay: 0.1,
+                      }}
+                    >
+                      <Check className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary-foreground" />
+                    </motion.div>
+                  ) : (
+                    <span
+                      className={`text-[10px] md:text-xs font-bold ${
+                        isActive ? "text-primary-foreground" : "text-muted-foreground"
+                      }`}
+                    >
+                      {index + 1}
+                    </span>
+                  )}
+
+                  {/* Active pulse ring */}
+                  {isActive && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full border-2 border-primary"
+                      initial={{ scale: 1, opacity: 0.8 }}
+                      animate={{ scale: 1.6, opacity: 0 }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeOut",
+                      }}
+                    />
+                  )}
+                </motion.div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Progress Bar */}
+        <div className="relative h-1 bg-muted rounded-full overflow-hidden">
+          <motion.div
+            className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-accent rounded-full"
+            initial={{ width: "0%" }}
+            animate={{ width: `${progressPercentage}%` }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            }}
+          />
+          <motion.div
+            className="absolute inset-y-0 w-16 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+            initial={{ x: "-100%" }}
+            animate={{ x: "400%" }}
+            transition={{
+              duration: 2.5,
+              repeat: Infinity,
+              repeatDelay: 1,
+              ease: "easeInOut",
+            }}
+          />
+        </div>
       </div>
-      <div className="bg-primary/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 mt-4">
-        <Icon className="h-8 w-8 text-primary" />
+
+      {/* Step Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {steps.map((step, index) => {
+          const isActive = activeStep === index;
+          const isPast = index < activeStep || completedSteps.includes(index);
+          const isFuture = index > activeStep;
+          const IconComponent = step.icon;
+
+          return (
+            <motion.div
+              key={step.number}
+              onClick={() => onStepInteraction(index)}
+              onMouseEnter={() => onStepInteraction(index)}
+              initial={false}
+              animate={{
+                scale: isActive ? 1.03 : 1,
+                y: isActive ? -6 : 0,
+                opacity: isFuture ? 0.5 : 1,
+              }}
+              whileHover={{
+                scale: 1.03,
+                y: -6,
+                opacity: 1,
+              }}
+              whileTap={{ scale: 0.98 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 25,
+              }}
+              className={`
+                relative cursor-pointer rounded-2xl p-6 text-center transition-all duration-300
+                ${
+                  isActive
+                    ? "bg-primary shadow-xl shadow-primary/20 ring-2 ring-primary/30"
+                    : isPast
+                    ? "bg-primary/5 border-2 border-primary/30"
+                    : "bg-card border-2 border-border hover:border-primary/40"
+                }
+              `}
+            >
+              {/* Step Number Badge */}
+              <motion.div
+                animate={{
+                  scale: isActive ? 1.1 : 1,
+                  backgroundColor:
+                    isActive
+                      ? "hsl(var(--primary-foreground))"
+                      : isPast
+                      ? "hsl(var(--primary))"
+                      : "hsl(var(--primary))",
+                }}
+                className={`
+                  absolute -top-3 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full 
+                  flex items-center justify-center font-bold text-sm shadow-lg
+                  ${isActive ? "text-primary" : "text-primary-foreground"}
+                `}
+              >
+                {isPast && !isActive ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  step.number
+                )}
+              </motion.div>
+
+              {/* Icon */}
+              <motion.div
+                animate={{
+                  scale: isActive ? 1.1 : 1,
+                  rotate: isActive ? 5 : 0,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 20,
+                }}
+                className={`
+                  w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 mt-3
+                  ${
+                    isActive
+                      ? "bg-primary-foreground/20"
+                      : isPast
+                      ? "bg-primary/15"
+                      : "bg-primary/10"
+                  }
+                `}
+              >
+                <IconComponent
+                  className={`h-7 w-7 ${
+                    isActive ? "text-primary-foreground" : "text-primary"
+                  }`}
+                />
+              </motion.div>
+
+              {/* Title */}
+              <h3
+                className={`text-lg font-semibold mb-2 transition-colors duration-200 ${
+                  isActive
+                    ? "text-primary-foreground"
+                    : isPast
+                    ? "text-primary"
+                    : "text-foreground"
+                }`}
+              >
+                {step.title}
+              </h3>
+
+              {/* Description */}
+              <AnimatePresence mode="wait">
+                {isActive ? (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-primary-foreground/80 text-sm leading-relaxed"
+                  >
+                    {step.description}
+                  </motion.p>
+                ) : (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className={`text-sm leading-relaxed ${
+                      isPast ? "text-primary/70" : "text-muted-foreground"
+                    }`}
+                  >
+                    {step.description}
+                  </motion.p>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          );
+        })}
       </div>
-      <h3 className="text-xl font-semibold mb-3 text-foreground">{title}</h3>
-      <p className="text-muted-foreground leading-relaxed">{description}</p>
     </div>
-  </div>
-);
+  );
+};
